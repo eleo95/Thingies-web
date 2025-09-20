@@ -9,36 +9,61 @@ export class LocalStorageRepository<T extends Thing> extends BaseRepository<T> {
 		}
 	}
 
-    private read(): T[] {
-        return JSON.parse(localStorage.getItem(this.storageKey) || "[]")
-    }
+	private read(): T[] {
+		return JSON.parse(localStorage.getItem(this.storageKey) || "[]");
+	}
 
-    private write(items: T[]): void {
-        localStorage.setItem(this.storageKey, JSON.stringify(items))
-    }
+	private write(items: T[]): void {
+		localStorage.setItem(this.storageKey, JSON.stringify(items));
+	}
 
 	getAll(includeDeleted = false): T[] {
-		throw new Error("Method not implemented.");
+		return this.read().filter((item) => includeDeleted || !item.deleted);
 	}
 	getById(id: string, includeDeleted = false): T | undefined {
-		throw new Error("Method not implemented.");
+		const item = this.read().find((i) => i.id === id);
+		if (!item) return undefined;
+		if (!includeDeleted && item.deleted) return undefined;
+		return item;
 	}
 	create(item: Omit<T, "id" | "deleted" | "createdAt" | "updatedAt">): T {
-		throw new Error("Method not implemented.");
+		const newItem = { ...item, id: crypto.randomUUID(), deleted: false } as T;
+		const items = this.read();
+		items.push(newItem);
+		this.write(items);
+		return newItem;
 	}
-	update(id: string, updates: Partial<Omit<T, "id">>): T | undefined {
-		throw new Error("Method not implemented.");
+	update(
+		id: string,
+		updates: Partial<Omit<T, "id" | "createdAt" | "updatedAt">>,
+	): T | undefined {
+		const items = this.read();
+		const index = items.findIndex((item) => item.id === id);
+		if (index === -1) return undefined;
+		items[index] = { ...items[index], ...updates, updatedAt: new Date() };
+		this.write(items);
+		return items[index];
 	}
 	delete(id: string): boolean {
-		throw new Error("Method not implemented.");
+		const items = this.read();
+		const index = items.findIndex((item) => item.id === id);
+		if (index === -1) return false;
+		items[index].deleted = true;
+		this.write(items);
+		return true;
 	}
 	restore(id: string): boolean {
-		throw new Error("Method not implemented.");
+		const items = this.read();
+		const index = items.findIndex((item) => item.id === id);
+		if (index === -1 || !items[index].deleted) return false;
+		items[index].deleted = false;
+		this.write(items);
+		return true;
 	}
 	clear(): void {
-		throw new Error("Method not implemented.");
+		this.write([]);
 	}
 	filter(predicate: (item: T) => boolean, includeDeleted = false): T[] {
-		throw new Error("Method not implemented.");
+		return this.getAll(includeDeleted).filter(predicate)
 	}
 }
