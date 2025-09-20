@@ -23,7 +23,7 @@ export class LocalStorageRepository<T extends Thing> extends BaseRepository<T> {
 	getById(id: string, includeDeleted = false): T | undefined {
 		throw new Error("Method not implemented.");
 	}
-	create(item: Omit<T, "id" | "deleted">): T {
+	create(item: Omit<T, "id" | "deleted" | "createdAt" | "updatedAt">): T {
 		throw new Error("Method not implemented.");
 	}
 	update(id: string, updates: Partial<Omit<T, "id">>): T | undefined {
