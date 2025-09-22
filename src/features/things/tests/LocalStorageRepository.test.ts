@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import type { Thing } from "../domain/things";
-import { LocalStorageRepository } from "../repository/LocalStorageRepo";
+import { LocalStorageThingRepository } from "../repository/LocalStorageRepo";
 
 describe("LocalStorageRepository", () => {
-	let repo: LocalStorageRepository<Thing>;
+	let repo: LocalStorageThingRepository<Thing>;
 
 	beforeEach(() => {
 		localStorage.clear();
-		repo = new LocalStorageRepository<Thing>("test-things");
+		repo = new LocalStorageThingRepository<Thing>("test-things");
 	});
 
 	it("should create a new item", () => {
