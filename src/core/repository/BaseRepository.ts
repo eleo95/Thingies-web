@@ -1,5 +1,3 @@
-// import type { createThingDTO, updateThingDTO } from "@/features/things/infra/ThingsDTO";
-import type { ThingCreateDTO, ThingUpdateDTO } from "@/features/things/domain/things";
 import { z } from "zod";
 
 export const BaseModelSchema = z.object({
@@ -15,8 +13,8 @@ export type BaseModel = z.infer<typeof BaseModelSchema>;
 export abstract class BaseRepository<T extends BaseModel> {
 	abstract getAll(includeDeleted?: boolean): T[];
 	abstract getById(id: string, includeDeleted?: boolean): T | undefined;
-	abstract create(item: ThingCreateDTO): T;
-	abstract update(id: string, updates: ThingUpdateDTO): T | undefined;
+	abstract create(item: Omit<T,keyof T>): T;
+	abstract update(id: string, updates: Partial<Omit<T,keyof T>>): T | undefined;
 	abstract delete(id: string): boolean;
 	abstract restore(id: string): boolean;
 	abstract clear(): void;

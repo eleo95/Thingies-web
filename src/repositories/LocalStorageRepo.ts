@@ -1,7 +1,6 @@
-import { BaseRepository } from "@/core/repository/BaseRepository";
-import type { Thing, ThingCreateDTO, ThingUpdateDTO } from "../domain/things";
+import { BaseModel, BaseRepository } from "@/core/repository/BaseRepository";
 
-export class LocalStorageThingRepository<T extends Thing> extends BaseRepository<T> {
+export class LocalStorageRepository<T extends BaseModel> extends BaseRepository<T> {
 	constructor(private storageKey: string) {
 		super();
 		if (!localStorage.getItem(this.storageKey)) {
@@ -26,7 +25,7 @@ export class LocalStorageThingRepository<T extends Thing> extends BaseRepository
 		if (!includeDeleted && item.deleted) return undefined;
 		return item;
 	}
-	create(item: ThingCreateDTO): T {
+	create(item: Omit<T,keyof T>): T {
 		const newItem = { ...item, id: crypto.randomUUID(), deleted: false, createdAt: new Date(), updatedAt:new Date() } as T;
 		const items = this.read();
 		items.push(newItem);
@@ -35,7 +34,7 @@ export class LocalStorageThingRepository<T extends Thing> extends BaseRepository
 	}
 	update(
 		id: string,
-		updates: ThingUpdateDTO,
+		updates: Partial<Omit<T, keyof T>>,
 	): T | undefined {
 		const items = this.read();
 		const index = items.findIndex((item) => item.id === id);

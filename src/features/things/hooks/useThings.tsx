@@ -1,10 +1,10 @@
 import { validate } from "@/core/utils/validate";
 import { type Thing, ThingCreateSchema, ThingUpdateSchema } from "@/features/things/domain/things";
-import { LocalStorageThingRepository } from "@/features/things/repository/LocalStorageRepo";
+import { LocalStorageRepository } from "@/repositories/LocalStorageRepo";
 import { useEffect, useState } from "react";
 import z from "zod";
 
-const repo = new LocalStorageThingRepository<Thing>("thingies_things");
+const repo = new LocalStorageRepository<Thing>("thingies_things");
 
 export function useThings(includeDeleted = false) {
   const [things, setThings] = useState<Thing[]>([]);
